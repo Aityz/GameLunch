@@ -357,6 +357,8 @@ impl eframe::App for GameLunch {
 
                                 if ui.button("Hide").clicked() {
                                     self.removed_values.push(key.to_string());
+
+                                    self.removed_values.dedup();
                                 }
                             });
                         }
