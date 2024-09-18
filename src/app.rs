@@ -246,9 +246,25 @@ impl eframe::App for GameLunch {
 
                 let mut i = 0;
 
+                // get game time data
+
+                let data = self.time.lock().unwrap();
+
                 for game in self.games.clone() { // data is cloned to save borrow checker
                     ui.horizontal(|ui| {
-                        ui.label(format!("{} by {}, {}", game.name, game.author, "0 Hours"));
+
+                        // get the data
+
+                        let mut sep = "/";
+
+                        #[cfg(not(unix))]
+                        {
+                            sep = "\\";
+                        }
+
+                        let time = game.location.to_string_lossy().split(sep).last().unwrap_or_default().to_lowercase();
+
+                        ui.label(format!("{} by {}, {}", game.name, game.author, format_time(data.get(&time).unwrap_or(&0))));
                         if ui.button("Launch").clicked() {
                             let proc = std::process::Command::new(&game.location).spawn();
 
@@ -331,7 +347,7 @@ impl eframe::App for GameLunch {
                     for (key, value) in data.iter() {
                         if !self.removed_values.contains(key) {
                             ui.horizontal(|ui| {
-                                ui.label(format!("{}, {}", key, value));
+                                ui.label(format!("{}, {}", key, format_time(value)));
 
                                 if ui.button("Hide").clicked() {
                                     self.removed_values.push(key.to_string());
@@ -345,5 +361,15 @@ impl eframe::App for GameLunch {
             _ => {}
 
         });
+    }
+}
+
+fn format_time(time: &u64) -> String {
+    if *time < 60 {
+        format!("{} seconds", time)
+    } else if *time < 3600 {
+        format!("{} minutes", time / 60)
+    } else {
+        format!("{} hours", time / 3600)
     }
 }
