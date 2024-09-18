@@ -343,6 +343,12 @@ impl eframe::App for GameLunch {
 
                 let data = self.time.lock().unwrap();
 
+                if ui.button("Hide All").clicked() {
+                    for (key, value) in data.iter() {
+                        self.removed_values.push(key.to_string());
+                    }
+                }
+
                 egui::ScrollArea::vertical().show(ui, |ui| {
                     for (key, value) in data.iter() {
                         if !self.removed_values.contains(key) {
