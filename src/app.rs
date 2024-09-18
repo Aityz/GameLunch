@@ -344,8 +344,10 @@ impl eframe::App for GameLunch {
                 let data = self.time.lock().unwrap();
 
                 if ui.button("Hide All").clicked() {
-                    for (key, value) in data.iter() {
+                    for (key, _value) in data.iter() {
                         self.removed_values.push(key.to_string());
+
+                        self.removed_values.dedup();
                     }
                 }
 
