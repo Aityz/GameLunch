@@ -201,6 +201,8 @@ impl eframe::App for GameLunch {
 
                 if ui.button("Sort").clicked() {
                     self.removed_values.sort();
+
+                    self.removed_values.dedup();
                 }
 
                 egui::ScrollArea::vertical().show(ui, |ui| {
